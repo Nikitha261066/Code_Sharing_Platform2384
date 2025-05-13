@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+<title>Code Sharing Platform</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=Poppins:wght@500&display=swap');
+  /* Prism.js default theme adapted with a dark modern twist */
+  :root {
+    --bg-color: #121212;
+    --main-bg: #1e1e1e;
+    --highlight-bg: #272822;
+    --accent-color: #00bcd4;
+    --text-color: #eee;
+    --text-secondary: #aaa;
+    --border-radius: 8px;
+    --font-mono: 'Fira Code', monospace;
+    --font-sans: 'Poppins', sans-serif;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-sans);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    min-height: 100vh;
+    user-select: none;
+  }
+  h1 {
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    user-select: text;
+  }
+  main {
+    background: var(--main-bg);
+    border-radius: var(--border-radius);
+    max-width: 600px;
+    width: 100%;
+    max-height: 600px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+  }
+  label {
+    margin: 8px 0 4px 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    user-select: text;
+  }
+  select, textarea {
+    width: 100%;
+    border-radius: var(--border-radius);
+    border: none;
+    outline: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    padding: 10px;
+    background: var(--highlight-bg);
+    color: var(--text-color);
+    resize: vertical;
+  }
+  select:focus, textarea:focus {
+    box-shadow: 0 0 8px var(--accent-color);
+  }
+  textarea {
+    height: 140px;
+    min-height: 120px;
+    max-height: 200px;
+  }
+  button {
+    margin-top: 12px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    background: var(--accent-color);
+    color: var(--bg-color);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  button:hover {
+    background: #00acc1;
+  }
+  section {
+    margin-top: 20px;
+    flex: 1;
+    overflow: auto;
+  }
+  #snippet-list {
+    max-height: 140px;
+    background: var(--highlight-bg);
+    border-radius: var(--border-radius);
+    padding: 8px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  #snippet-list button {
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 6px 10px;
+    border-radius: var(--border-radius);
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    user-select: text;
+  }
+  #snippet-list button:hover {
+    background: var(--accent-color);
+    color: var(--bg-color);
+  }
+  pre {
+    background: var(--highlight-bg);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    overflow-x: auto;
+    max-height: 280px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+    user-select: text;
+  }
+  /* Responsive mobile adjustments */
+  @media (max-width: 400px) {
+    main {
+      max-width: 100%;
+      padding: 12px;
+    }
+    textarea {
+      height: 120px;
+    }
+    pre {
+      max-height: 220px;
+      font-size: 0.85rem;
+    }
+  }
+</style>
+<!-- Prism.js -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+  <h1>Code Sharing Platform</h1>
+  <main>
+    <label for="language">Select Language:</label>
+    <select id="language" aria-label="Select programming language">
+      <option value="clike">C/C++/Java</option>
+      <option value="javascript" selected>JavaScript</option>
+      <option value="python">Python</option>
+      <option value="java">Java</option>
+      <option value="ruby">Ruby</option>
+      <option value="css">CSS</option>
+      <option value="html">HTML</option>
+      <option value="bash">Bash</option>
+      <option value="php">PHP</option>
+      <option value="json">JSON</option>
+      <option value="markdown">Markdown</option>
+      <option value="sql">SQL</option>
+    </select>
+
+    <label for="code-input">Enter your code snippet:</label>
+    <textarea id="code-input" spellcheck="false" aria-label="Code input area" placeholder="Paste or write your code here..."></textarea>
+
+    <button id="share-btn" aria-label="Share code snippet">Share Code</button>
+
+    <section aria-label="Shared snippets">
+      <h2 style="color: var(--accent-color); margin-top: 0;">Shared Snippets</h2>
+      <div id="snippet-list" role="list" aria-live="polite" aria-relevant="additions"></div>
+      <pre id="code-display" class="language-javascript" tabindex="0" aria-label="Code display area" aria-live="polite" style="display:none;"></pre>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-ruby.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js" crossorigin="anonymous"></script>
+
+  <script>
+    (() => {
+      const languageSelect = document.getElementById('language');
+      const codeInput = document.getElementById('code-input');
+      const shareBtn = document.getElementById('share-btn');
+      const snippetList = document.getElementById('snippet-list');
+      const codeDisplay = document.getElementById('code-display');
+
+      const STORAGE_KEY = 'code_sharing_platform_snippets';
+
+      // Load snippets from localStorage
+      function loadSnippets() {
+        const snippets = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        return snippets;
+      }
+      // Save snippets to localStorage
+      function saveSnippets(snippets) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(snippets));
+      }
+      // Generate unique ID for snippet
+      function generateID() {
+        return 'snip-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+      }
+      // Format snippet title preview
+      function snippetTitle(code) {
+        const lines = code.trim().split('\n');
+        const firstLine = lines[0].trim().slice(0, 40);
+        if (lines.length > 1) {
+          return firstLine + ' ...';
+        }
+        return firstLine || '[empty snippet]';
+      }
+      // Render snippet list
+      function renderSnippetList() {
+        snippetList.innerHTML = '';
+        const snippets = loadSnippets();
+        if (snippets.length === 0) {
+          snippetList.innerHTML = '<p style="color: var(--text-secondary); margin: 8px;">No shared snippets yet.</p>';
+          codeDisplay.style.display = 'none';
+          codeDisplay.textContent = '';
+          return;
+        }
+        snippets.forEach(({ id, code, language }) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = snippetTitle(code);
+          btn.setAttribute('data-id', id);
+          btn.setAttribute('aria-label', `Load snippet: ${snippetTitle(code)}`);
+          btn.addEventListener('click', () => loadSnippetToDisplay(id));
+          snippetList.appendChild(btn);
+        });
+      }
+      // Load snippet code to display area
+      function loadSnippetToDisplay(id) {
+        const snippets = loadSnippets();
+        const snippet = snippets.find(s => s.id === id);
+        if (!snippet) return;
+        codeDisplay.style.display = 'block';
+        codeDisplay.className = 'language-' + snippet.language;
+        codeDisplay.textContent = snippet.code;
+        Prism.highlightElement(codeDisplay);
+        codeDisplay.focus();
+      }
+      // Share code: save snippet and update list
+      function shareCode() {
+        const code = codeInput.value.trim();
+        if (!code) {
+          alert('Please enter some code to share.');
+          return;
+        }
+        const language = languageSelect.value || 'javascript';
+        const snippets = loadSnippets();
+        const id = generateID();
+        snippets.unshift({ id, code, language }); // newest on top
+        saveSnippets(snippets);
+        renderSnippetList();
+        codeInput.value = '';
+        alert('Code snippet shared! Select it from the list below to view.');
+      }
+
+      shareBtn.addEventListener('click', shareCode);
+
+      // On language change, update code display if visible for live preview - optional
+      languageSelect.addEventListener('change', () => {
+        if (codeDisplay.style.display === 'block') {
+          // reset display language
+          const snippets = loadSnippets();
+          if (snippets.length > 0) {
+            loadSnippetToDisplay(snippets[0].id);
+          }
+        }
+      });
+
+      // Initial render
+      renderSnippetList();
+    })();
+  </script>
+</body>
+</html>
+
